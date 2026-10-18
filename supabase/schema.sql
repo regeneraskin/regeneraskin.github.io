@@ -274,3 +274,55 @@ revoke insert, delete on public.agenda_config from authenticated;
 revoke execute on function public.horarios_ocupados(timestamptz, timestamptz), public.agendar(timestamptz, text, text, text, uuid) from public;
 grant execute on function public.horarios_ocupados(timestamptz, timestamptz) to anon, authenticated;
 grant execute on function public.agendar(timestamptz, text, text, text, uuid) to anon, authenticated;
+
+-- =========================================================================
+-- Liga ficha e agendamento pelo telefone (a cliente pode agendar antes ou
+-- depois de preencher a ficha; o telefone é comparado só pelos números)
+-- =========================================================================
+create or replace function privado.digitos(t text) returns text
+language sql immutable set search_path = public as $$
+  select regexp_replace(coalesce(t, ''), '\D', '', 'g');
+$$;
+
+-- Agendamento novo sem ficha: procura a ficha mais recente da mesma cliente
+create or replace function privado.agendamento_acha_ficha() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if new.ficha_id is null and new.tipo = 'atendimento' and length(privado.digitos(new.cliente_telefone)) >= 10 then
+    select s.id into new.ficha_id
+    from public.submissions s
+    where privado.digitos(s.client_phone) = privado.digitos(new.cliente_telefone)
+    order by s.created_at desc
+    limit 1;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists agendamento_acha_ficha on public.agendamentos;
+create trigger agendamento_acha_ficha
+  before insert on public.agendamentos
+  for each row execute function privado.agendamento_acha_ficha();
+
+-- Ficha nova: liga os agendamentos ativos da mesma cliente que ainda não têm ficha
+create or replace function privado.ficha_liga_agendamentos() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if length(privado.digitos(new.client_phone)) >= 10 then
+    update public.agendamentos a
+    set ficha_id = new.id
+    where a.ficha_id is null
+      and a.tipo = 'atendimento'
+      and a.status <> 'cancelado'
+      and privado.digitos(a.cliente_telefone) = privado.digitos(new.client_phone);
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists ficha_liga_agendamentos on public.submissions;
+create trigger ficha_liga_agendamentos
+  after insert on public.submissions
+  for each row execute function privado.ficha_liga_agendamentos();
+
+revoke execute on function privado.agendamento_acha_ficha(), privado.ficha_liga_agendamentos() from public, anon, authenticated;
