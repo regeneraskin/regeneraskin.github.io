@@ -159,9 +159,21 @@ export function linkWhatsApp(numero, msg) {
   return 'https://api.whatsapp.com/send?' + params.toString().replace(/\+/g, '%20');
 }
 
-// Troca {nome}, {link}… do modelo pelos valores
+// Troca {nome}, {link}… do modelo pelos valores. Se um valor vier vazio,
+// some junto com a vírgula/espaço antes dele ("Oi, {nome}!" vira "Oi!").
 export function preencher(modelo, dados) {
-  return String(modelo || '').replace(/\{(\w+)\}/g, (tudo, chave) => (chave in dados ? dados[chave] : tudo)).trim();
+  return String(modelo || '').replace(/(,[ \t]*|[ \t]+)?\{(\w+)\}/g, (tudo, antes, chave) => {
+    if (!(chave in dados)) return tudo;
+    return dados[chave] ? (antes || '') + dados[chave] : '';
+  }).trim();
+}
+
+export function mascaraTelefone(valor) {
+  const d = String(valor || '').replace(/\D/g, '').slice(0, 11);
+  if (d.length <= 2) return d;
+  if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
 }
 
 export function primeiroNome(nome) {

@@ -1,6 +1,6 @@
 // Login e barra de navegação das páginas da equipe (painel e editor).
 import { api } from './api.js';
-import { el, banner, linkDaFicha, copiar, linkWhatsApp, preencher } from './util.js';
+import { el, banner, linkDaFicha, copiar, linkWhatsApp, preencher, primeiroNome, mascaraTelefone, toast } from './util.js';
 import { mensagens } from './modelo-padrao.js';
 import { NOME_EMPRESA } from './config.js';
 
@@ -73,17 +73,51 @@ export async function modelosMensagem() {
   return modelos;
 }
 
-// Caixa com o link da ficha + botão de WhatsApp
-export async function compartilhar(form) {
-  const url = linkDaFicha(form.slug);
-  return compartilharLink(url, preencher((await modelosMensagem()).ficha, { link: url }));
+// Painel de envio da ficha ou do link de agendamento pelo WhatsApp.
+// opcoes: [{ titulo, url }] (mais de uma vira um seletor); modelo: texto com {nome} e {link}.
+export function painelEnvio({ opcoes, modelo, nome = '', telefone = '' }) {
+  let editado = false;
+  const escolha = el('select', { class: 'input' }, opcoes.map((o, i) => el('option', { value: String(i) }, o.titulo)));
+  const dNome = el('input', { class: 'input', value: nome, placeholder: 'Ex.: Maria', autocomplete: 'off' });
+  const dTel = el('input', { class: 'input', type: 'tel', value: mascaraTelefone(telefone), placeholder: '(00) 00000-0000', autocomplete: 'off' });
+  const texto = el('textarea', { class: 'input envio-msg', rows: '11', 'aria-label': 'Mensagem' });
+  const enviar = el('a', { class: 'btn envio-whats', target: '_blank', rel: 'noopener' }, 'Enviar no WhatsApp');
+  const dica = el('p', { class: 'f-help envio-dica' });
+  const restaurar = el('button', { type: 'button', class: 'btn-link', hidden: true, onclick: () => { editado = false; atualizar(); } }, '↺ Voltar ao texto sugerido');
+
+  const url = () => opcoes[Number(escolha.value) || 0].url;
+  function atualizar() {
+    if (!editado) texto.value = preencher(modelo, { nome: primeiroNome(dNome.value), link: url() });
+    restaurar.hidden = !editado;
+    const fone = dTel.value.replace(/\D/g, '');
+    const foneOk = fone.length >= 10;
+    enviar.href = linkWhatsApp(foneOk ? fone : '', texto.value);
+    dica.textContent = foneOk
+      ? '✓ A conversa vai abrir direto com a cliente.'
+      : 'Sem o número, o WhatsApp abre e você escolhe o contato.';
+  }
+  dNome.addEventListener('input', atualizar);
+  dTel.addEventListener('input', () => { dTel.value = mascaraTelefone(dTel.value); atualizar(); });
+  escolha.addEventListener('change', () => { editado = false; atualizar(); });
+  texto.addEventListener('input', () => { editado = true; restaurar.hidden = false; atualizar(); });
+  atualizar();
+
+  return el('div', { class: 'envio' },
+    opcoes.length > 1 ? el('label', { class: 'campo-form full' }, el('span', { class: 'lbl' }, 'Qual ficha?'), escolha) : null,
+    el('label', { class: 'campo-form' }, el('span', { class: 'lbl' }, 'Nome da cliente (opcional)'), dNome),
+    el('label', { class: 'campo-form' }, el('span', { class: 'lbl' }, 'WhatsApp da cliente (opcional)'), dTel),
+    el('div', { class: 'campo-form full' },
+      el('div', { class: 'envio-topo' }, el('span', { class: 'lbl' }, 'Mensagem (pode personalizar antes de enviar)'), restaurar),
+      texto),
+    el('div', { class: 'full envio-acoes' },
+      enviar,
+      el('button', { type: 'button', class: 'btn ghost small', onclick: () => copiar(texto.value).then(() => toast('Mensagem copiada!')) }, 'Copiar mensagem'),
+      el('button', { type: 'button', class: 'btn ghost small', onclick: () => copiar(url()) }, 'Copiar só o link'),
+      el('a', { class: 'btn ghost small', href: url(), target: '_blank', rel: 'noopener', onclick: (e) => { e.currentTarget.href = url(); } }, 'Ver como a cliente vê')),
+    el('div', { class: 'full' }, dica));
 }
 
-export function compartilharLink(url, msg) {
-  return el('div', {},
-    el('div', { class: 'share-row' },
-      el('input', { class: 'input', value: url, readonly: '', onfocus: (e) => e.target.select(), 'aria-label': 'Link da ficha' }),
-      el('button', { class: 'btn small', type: 'button', onclick: () => copiar(url) }, 'Copiar link'),
-      el('a', { class: 'btn ghost small', href: linkWhatsApp('', msg), target: '_blank', rel: 'noopener' }, 'Enviar no WhatsApp'),
-      el('a', { class: 'btn ghost small', href: url, target: '_blank', rel: 'noopener' }, 'Abrir')));
+// Envio de uma ficha específica
+export async function compartilhar(form, cliente = {}) {
+  return painelEnvio({ opcoes: [{ titulo: form.title, url: linkDaFicha(form.slug) }], modelo: (await modelosMensagem()).ficha, ...cliente });
 }

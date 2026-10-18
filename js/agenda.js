@@ -5,7 +5,7 @@ import {
   el, banner, toast, clone, instante, diaNoFuso, horaNoFuso, somaDias, diaDaSemana, nomeDoDia, diaPorExtenso,
   horariosLivres, linkWhatsApp, linkAgendamento, minutos, hhmm, preencher, primeiroNome,
 } from './util.js';
-import { exigirLogin, barraTopo, modal, compartilharLink } from './equipe.js';
+import { exigirLogin, barraTopo, modal, painelEnvio } from './equipe.js';
 
 const app = document.getElementById('app');
 const STATUS = { agendado: 'Agendado', confirmado: 'Confirmado', concluido: 'Concluído', faltou: 'Faltou', cancelado: 'Cancelado' };
@@ -72,8 +72,8 @@ function desenhar() {
       el('button', { class: 'btn small', onclick: () => editar() }, '+ Agendar'),
       el('button', { class: 'btn ghost small', onclick: bloquear }, 'Bloquear horário'),
       el('button', { class: 'btn ghost small', onclick: () => modal('Link de agendamento', el('div', {},
-        el('p', { class: 'muted' }, 'Envie para suas clientes. Elas escolhem o atendimento, o dia e o horário livre, e o agendamento aparece aqui na hora.'),
-        compartilharLink(linkAgendamento(), preencher(mensagens(config).agendamento, { link: linkAgendamento() })))) }, 'Link de agendamento'),
+        el('p', { class: 'muted', style: 'margin-top:0' }, 'A cliente escolhe o atendimento, o dia e o horário livre, e o agendamento aparece aqui na hora. 💕'),
+        painelEnvio({ opcoes: [{ titulo: 'Agendamento', url: linkAgendamento() }], modelo: mensagens(config).agendamento }))) }, 'Link de agendamento'),
       pessoa.papel === 'admin' ? el('button', { class: 'btn ghost small', onclick: configurar }, 'Horários e serviços') : null,
       el('button', { class: 'btn ghost small', title: 'Atualizar', onclick: () => irPara(dia, true) }, '↻')));
 

@@ -1,8 +1,8 @@
 // Painel da profissional: lista as fichas enviadas e permite acompanhar cada uma.
 import { api } from './api.js';
 import { alertas, respostaView } from './render.js';
-import { el, banner, toast, dataHora, dataCurta, hojeISO, uid, diaNoFuso, linkWhatsApp, primeiroNome } from './util.js';
-import { exigirLogin, barraTopo, modal, compartilhar } from './equipe.js';
+import { el, banner, toast, dataHora, dataCurta, hojeISO, uid, diaNoFuso, linkWhatsApp, primeiroNome, linkDaFicha, linkAgendamento } from './util.js';
+import { exigirLogin, barraTopo, modal, painelEnvio, modelosMensagem } from './equipe.js';
 
 const app = document.getElementById('app');
 const STATUS = { nova: 'Nova', vista: 'Vista', arquivada: 'Arquivada' };
@@ -164,7 +164,11 @@ function caixaAgendamentos() {
       ? el('ul', { class: 'ag-mini' }, itens.map((a) => el('li', {},
         el('a', { class: 'btn-link', href: 'agenda.html#dia=' + diaNoFuso(a.inicio, 'America/Sao_Paulo') }, dataHora(a.inicio)),
         ' · ', a.servico, ' · ', el('span', { class: 'badge ' + (a.status === 'cancelado' ? 'arquivada' : 'vista') }, a.status))))
-      : el('p', { class: 'muted' }, 'A cliente ainda não agendou pelo link. ', el('a', { class: 'btn-link', href: 'agenda.html' }, 'Abrir agenda')));
+      : el('p', { class: 'muted' }, 'A cliente ainda não agendou pelo link. ',
+        el('button', { class: 'btn-link', onclick: async () => modal('Enviar link de agendamento', painelEnvio({
+          opcoes: [{ titulo: 'Agendamento', url: linkAgendamento() }], modelo: (await modelosMensagem()).agendamento,
+          nome: s.client_name, telefone: s.client_phone,
+        })) }, 'Enviar link de agendamento pra ela')));
   }).catch(() => lista.replaceChildren(el('p', { class: 'muted' }, 'Não foi possível carregar os agendamentos.')));
   return el('div', { class: 'box nao-imprimir' }, el('h3', {}, 'Agendamentos'), lista);
 }
@@ -249,7 +253,7 @@ async function enviarFicha() {
   }
   modal('Enviar ficha para cliente', forms.length
     ? el('div', {},
-      el('p', { class: 'muted' }, 'Copie o link ou mande direto pelo WhatsApp. A cliente preenche pelo celular e a ficha aparece aqui.'),
-      await Promise.all(forms.map(async (f) => el('div', {}, el('strong', {}, f.title), await compartilhar(f)))))
+      el('p', { class: 'muted', style: 'margin-top:0' }, 'A cliente preenche pelo celular e a ficha aparece aqui na hora. 💕'),
+      painelEnvio({ opcoes: forms.map((f) => ({ titulo: f.title, url: linkDaFicha(f.slug) })), modelo: (await modelosMensagem()).ficha }))
     : el('p', {}, 'Nenhum questionário ativo. Crie ou ative um no editor.'));
 }

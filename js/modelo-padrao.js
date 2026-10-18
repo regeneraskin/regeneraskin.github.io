@@ -82,14 +82,14 @@ export function modeloPadrao() {
 // {nome}, {servico}, {data}, {hora}, {link}.
 export const MENSAGENS_PADRAO = {
   ficha:
-    'Oi, tudo bem? 🌸\n\n' +
+    'Oi, {nome}! Tudo bem? 🌸\n\n' +
     'Que alegria ter você com a gente na Regenera Skin! ✨\n\n' +
     'Antes do seu atendimento, preparei uma fichinha rápida pra conhecer melhor a sua pele e a sua saúde. ' +
     'Assim eu cuido de você com todo o carinho e a segurança que você merece. 💕\n\n' +
     'É só tocar no link e preencher com calma (leva uns 5 minutinhos):\n{link}\n\n' +
     'Qualquer dúvida, estou aqui! 🥰',
   agendamento:
-    'Oi, tudo bem? 🌸\n\n' +
+    'Oi, {nome}! Tudo bem? 🌸\n\n' +
     'Que bom que você quer cuidar de você com a gente! ✨\n\n' +
     'Por aqui você escolhe o dia e o horário que ficam melhores pra você:\n{link}\n\n' +
     'Assim que agendar, seu horário fica reservadinho. Te espero! 💕',

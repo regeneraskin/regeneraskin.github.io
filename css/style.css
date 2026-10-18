@@ -356,3 +356,17 @@ label.check { display: inline-flex; gap: 8px; align-items: center; cursor: point
   .form-grid { grid-template-columns: 1fr; }
   .ag-data h1 { font-size: 22px; }
 }
+
+/* ---------- Painel de envio (ficha / agendamento) ---------- */
+.envio { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.envio .full { grid-column: 1 / -1; }
+.envio-topo { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.envio-msg { min-height: 220px; line-height: 1.45; background: #f3fbf1; border-color: #cfe3cb; }
+.envio-acoes { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.envio-whats { background: #25d366; border-color: #25d366; }
+.envio-whats:hover { background: #1da851; border-color: #1da851; }
+.envio-dica { margin: 0; }
+@media (max-width: 860px) {
+  .envio { grid-template-columns: 1fr; }
+  .envio-acoes .btn { flex: 1 1 auto; }
+}
