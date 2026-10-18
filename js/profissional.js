@@ -1,8 +1,8 @@
 // Painel da profissional: lista as fichas enviadas e permite acompanhar cada uma.
-import { api } from './api.js?v=202610180432';
-import { alertas, respostaView } from './render.js?v=202610180432';
-import { el, banner, toast, dataHora, dataCurta, hojeISO, uid, diaNoFuso, linkWhatsApp, primeiroNome, linkDaFicha, linkAgendamento } from './util.js?v=202610180432';
-import { exigirLogin, barraTopo, modal, painelEnvio, modelosMensagem } from './equipe.js?v=202610180432';
+import { api } from './api.js?v=202610180434';
+import { alertas, respostaView } from './render.js?v=202610180434';
+import { el, banner, toast, dataHora, dataCurta, hojeISO, uid, diaNoFuso, linkWhatsApp, primeiroNome, linkDaFicha, linkAgendamento } from './util.js?v=202610180434';
+import { exigirLogin, barraTopo, modal, painelEnvio, modelosMensagem } from './equipe.js?v=202610180434';
 
 const app = document.getElementById('app');
 const STATUS = { nova: 'Nova', vista: 'Vista', arquivada: 'Arquivada' };
