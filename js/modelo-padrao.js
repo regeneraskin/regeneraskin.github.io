@@ -82,28 +82,28 @@ export function modeloPadrao() {
 // {nome}, {servico}, {data}, {hora}, {link}.
 export const MENSAGENS_PADRAO = {
   ficha:
-    'Oi, {nome}! Tudo bem? 🌸\n\n' +
-    'Que alegria ter você com a gente na Regenera Skin! ✨\n\n' +
-    'Antes do seu atendimento, preparei uma fichinha rápida pra conhecer melhor a sua pele e a sua saúde. ' +
-    'Assim eu cuido de você com todo o carinho e a segurança que você merece. 💕\n\n' +
-    'É só tocar no link e preencher com calma (leva uns 5 minutinhos):\n{link}\n\n' +
-    'Qualquer dúvida, estou aqui! 🥰',
+    'Olá, {nome}! Tudo bem? 🌸\n\n' +
+    'Seja muito bem-vinda à Regenera Skin! ✨\n\n' +
+    'Antes do seu atendimento, peço que preencha a ficha de anamnese. Com essas informações, ' +
+    'conheço melhor a sua pele e a sua saúde e conduzo o seu tratamento com toda a segurança que você merece. 💕\n\n' +
+    'O preenchimento leva cerca de 5 minutos:\n{link}\n\n' +
+    'Se tiver qualquer dúvida, estou à disposição.',
   agendamento:
-    'Oi, {nome}! Tudo bem? 🌸\n\n' +
-    'Que bom que você quer cuidar de você com a gente! ✨\n\n' +
-    'Por aqui você escolhe o dia e o horário que ficam melhores pra você:\n{link}\n\n' +
-    'Assim que agendar, seu horário fica reservadinho. Te espero! 💕',
+    'Olá, {nome}! Tudo bem? 🌸\n\n' +
+    'Preparei tudo com carinho para receber você. ✨\n\n' +
+    'Pelo link abaixo, você escolhe o dia e o horário mais convenientes:\n{link}\n\n' +
+    'Assim que concluir, o seu horário fica reservado. Será um prazer atender você! 💕',
   confirmacao:
-    'Oi, {nome}! Tudo bem? 🌸\n\n' +
-    'Passando pra confirmar o seu momento de cuidado com a gente:\n\n' +
+    'Olá, {nome}! Tudo bem? 🌸\n\n' +
+    'Passando para confirmar o seu atendimento:\n\n' +
     '✨ {servico}\n📅 {data}\n⏰ {hora}\n\n' +
-    'Posso confirmar sua presença? Se precisar remarcar, é só me avisar por aqui, tá? 💕\n\n' +
+    'Posso confirmar a sua presença? Caso precise remarcar, é só me avisar por aqui. 💕\n\n' +
     'Com carinho, Regenera Skin',
   aviso_cliente:
-    'Oi! Aqui é {nome} 🌸\n\n' +
+    'Olá! Aqui é {nome}. 🌸\n\n' +
     'Acabei de agendar pelo link:\n\n' +
     '✨ {servico}\n📅 {data}\n⏰ {hora}\n\n' +
-    'Até lá! 💕',
+    'Até breve!',
 };
 
 export function mensagens(config) {

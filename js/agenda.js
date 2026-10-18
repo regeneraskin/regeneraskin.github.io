@@ -1,11 +1,11 @@
 // Agenda da equipe: atendimentos do dia, semana, bloqueios e configuração do expediente.
-import { api } from './api.js?v=202610180422';
-import { agendaPadrao, mensagens, MENSAGENS_PADRAO } from './modelo-padrao.js?v=202610180422';
+import { api } from './api.js?v=202610180429';
+import { agendaPadrao, mensagens, MENSAGENS_PADRAO } from './modelo-padrao.js?v=202610180429';
 import {
   el, banner, toast, clone, instante, diaNoFuso, horaNoFuso, somaDias, diaDaSemana, nomeDoDia, diaPorExtenso,
   horariosLivres, linkWhatsApp, linkAgendamento, minutos, hhmm, preencher, primeiroNome,
-} from './util.js?v=202610180422';
-import { exigirLogin, barraTopo, modal, painelEnvio } from './equipe.js?v=202610180422';
+} from './util.js?v=202610180429';
+import { exigirLogin, barraTopo, modal, painelEnvio } from './equipe.js?v=202610180429';
 
 const app = document.getElementById('app');
 const STATUS = { agendado: 'Agendado', confirmado: 'Confirmado', concluido: 'Concluído', faltou: 'Faltou', cancelado: 'Cancelado' };
@@ -313,7 +313,7 @@ function configurar() {
   campo('Mensagem na página de agendamento', mensagem, 'full'),
   el('h3', { class: 'full' }, 'Mensagens de WhatsApp'),
   el('p', { class: 'full muted', style: 'margin:0' },
-    'Escreva do seu jeitinho, com emojis à vontade. O app troca sozinho: {nome} (primeiro nome da cliente), {servico}, {data}, {hora} e {link}.'),
+    'Escreva do seu jeito, com emojis à vontade. O app troca sozinho: {nome} (primeiro nome da cliente), {servico}, {data}, {hora} e {link}.'),
   campo('Confirmação de horário (você → cliente)', textosMsg.confirmacao, 'full'),
   campo('Envio da ficha de anamnese (você → cliente)', textosMsg.ficha, 'full'),
   campo('Envio do link de agendamento (você → cliente)', textosMsg.agendamento, 'full'),

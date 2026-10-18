@@ -1,9 +1,9 @@
 // Editor dos questionários (só para administradoras).
-import { api } from './api.js?v=202610180422';
-import { TIPOS, FORMATOS, renderForm } from './render.js?v=202610180422';
-import { modeloPadrao } from './modelo-padrao.js?v=202610180422';
-import { el, banner, toast, uid, clone, slugify } from './util.js?v=202610180422';
-import { exigirLogin, barraTopo, modal, compartilhar } from './equipe.js?v=202610180422';
+import { api } from './api.js?v=202610180429';
+import { TIPOS, FORMATOS, renderForm } from './render.js?v=202610180429';
+import { modeloPadrao } from './modelo-padrao.js?v=202610180429';
+import { el, banner, toast, uid, clone, slugify } from './util.js?v=202610180429';
+import { exigirLogin, barraTopo, modal, compartilhar } from './equipe.js?v=202610180429';
 
 const app = document.getElementById('app');
 

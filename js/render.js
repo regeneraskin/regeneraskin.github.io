@@ -1,6 +1,6 @@
 // Desenha o questionário (para a cliente e para a pré-visualização do editor)
 // e formata as respostas (para o painel da profissional).
-import { el, uid, dataCurta } from './util.js?v=202610180422';
+import { el, uid, dataCurta } from './util.js?v=202610180429';
 
 export const TIPOS = {
   short: 'Resposta curta',
