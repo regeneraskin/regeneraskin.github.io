@@ -78,6 +78,16 @@ Depois:
 
 > Já rodou o `schema.sql` antes desta versão? Rode de novo: ele só cria o que falta e não apaga nada.
 
+## Publicando mudanças
+
+Antes de publicar qualquer alteração nos arquivos `js/` ou `css/`, rode:
+
+```
+python3 scripts/versao.py
+```
+
+Isso carimba um número de versão nos arquivos. Sem ele, o navegador de quem já abriu o site pode misturar arquivos novos com antigos guardados e a página fica presa em "Carregando…".
+
 ## Cuidados com os dados (LGPD)
 
 Ficha de anamnese tem **dados de saúde**, que a LGPD trata como dados sensíveis. O app já ajuda com isso: termo de consentimento específico para uso dos dados, acesso só com login, autorização de imagem separada (com opção "sem identificação"). Mesmo assim:

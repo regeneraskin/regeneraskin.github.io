@@ -1,12 +1,12 @@
 // Página pública de agendamento: agendamento.html
 // Pode ser aberta direto (link só de agendamento) ou ao final da ficha,
 // quando já chega com nome e telefone preenchidos.
-import { api } from './api.js';
-import { NOME_EMPRESA } from './config.js';
-import { mensagens } from './modelo-padrao.js';
+import { api } from './api.js?v=202610180422';
+import { NOME_EMPRESA } from './config.js?v=202610180422';
+import { mensagens } from './modelo-padrao.js?v=202610180422';
 import {
   el, banner, toast, preencher, diaNoFuso, diaDaSemana, somaDias, nomeDoDia, diaPorExtenso, horariosLivres, linkWhatsApp,
-} from './util.js';
+} from './util.js?v=202610180422';
 
 const app = document.getElementById('app');
 

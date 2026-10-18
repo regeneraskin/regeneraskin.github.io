@@ -7,12 +7,22 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Lato:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=202610180422">
   <meta name="robots" content="noindex">
   <title>Agenda · Regenera Skin</title>
 </head>
 <body>
   <div id="app"><div class="center-msg">Carregando…</div></div>
-  <script type="module" src="js/agenda.js"></script>
+  <script type="module" src="js/agenda.js?v=202610180422"></script>
+  <script>
+    // Se algo impedir o app de abrir, mostra um aviso em vez de carregar para sempre
+    setTimeout(function () {
+      var app = document.getElementById('app');
+      if (app && app.querySelector('.center-msg') && /Carregando/.test(app.textContent)) {
+        app.innerHTML = '<div class="center-msg">Está demorando mais que o normal… 🌸<br><br>' +
+          '<button class="btn" onclick="location.reload()">Tentar de novo</button></div>';
+      }
+    }, 12000);
+  </script>
 </body>
 </html>

@@ -1,8 +1,8 @@
 // Login e barra de navegação das páginas da equipe (painel e editor).
-import { api } from './api.js';
-import { el, banner, linkDaFicha, copiar, linkWhatsApp, preencher, primeiroNome, mascaraTelefone, toast } from './util.js';
-import { mensagens } from './modelo-padrao.js';
-import { NOME_EMPRESA } from './config.js';
+import { api } from './api.js?v=202610180422';
+import { el, banner, linkDaFicha, copiar, linkWhatsApp, preencher, primeiroNome, mascaraTelefone, toast } from './util.js?v=202610180422';
+import { mensagens } from './modelo-padrao.js?v=202610180422';
+import { NOME_EMPRESA } from './config.js?v=202610180422';
 
 // Mostra o login (se preciso) e chama aoEntrar(pessoa) quando houver sessão.
 export async function exigirLogin(app, titulo, aoEntrar) {

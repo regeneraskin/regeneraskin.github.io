@@ -1,8 +1,8 @@
 // Página que a cliente abre pelo link: index.html?f=<endereço-da-ficha>
-import { api } from './api.js';
-import { renderForm } from './render.js';
-import { el, banner, toast } from './util.js';
-import { NOME_EMPRESA } from './config.js';
+import { api } from './api.js?v=202610180422';
+import { renderForm } from './render.js?v=202610180422';
+import { el, banner, toast } from './util.js?v=202610180422';
+import { NOME_EMPRESA } from './config.js?v=202610180422';
 
 const app = document.getElementById('app');
 const slug = new URLSearchParams(location.search).get('f');
