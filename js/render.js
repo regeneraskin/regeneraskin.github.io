@@ -1,6 +1,6 @@
 // Desenha o questionário (para a cliente e para a pré-visualização do editor)
 // e formata as respostas (para o painel da profissional).
-import { el, uid, dataCurta } from './util.js?v=202610180440';
+import { el, uid, dataCurta } from './util.js?v=202610181407';
 
 export const TIPOS = {
   short: 'Resposta curta',
@@ -241,6 +241,24 @@ export function dadosDaCliente(schema, answers) {
     return f ? String(answers?.[f.id] || '') : '';
   };
   return { nome: pega('nome'), telefone: pega('telefone') };
+}
+
+export function respostaTexto(f, v) {
+  switch (f.type) {
+    case 'yesno':
+      if (!v?.valor) return '';
+      return (v.valor === 'sim' ? 'Sim' : 'Não') + (v.detalhe ? ' — ' + v.detalhe : '');
+    case 'multi':
+      return Array.isArray(v) ? v.join(', ') : '';
+    case 'consent':
+      return v === true ? 'Aceito' : 'Não aceito';
+    case 'signature':
+      return v ? 'Assinada' : '';
+    case 'date':
+      return v ? dataCurta(v) : '';
+    default:
+      return v == null ? '' : String(v);
+  }
 }
 
 export function respostaView(f, v) {

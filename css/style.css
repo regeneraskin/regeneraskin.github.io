@@ -370,3 +370,41 @@ label.check { display: inline-flex; gap: 8px; align-items: center; cursor: point
   .envio { grid-template-columns: 1fr; }
   .envio-acoes .btn { flex: 1 1 auto; }
 }
+
+/* ---------- Login: esqueci minha senha ---------- */
+.login form .btn-link { justify-self: center; }
+.login-ok { background: var(--ok-bg); color: var(--ok); border-radius: 10px; padding: 12px 14px; margin: 0; }
+
+/* ---------- Baixar fichas ---------- */
+.baixar { display: grid; gap: 10px; }
+.baixar-opcao {
+  display: grid; gap: 4px; text-align: left; padding: 14px 16px; border-radius: 12px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--surface); font-size: 15px;
+}
+.baixar-opcao:hover { border-color: var(--gold); background: var(--gold-soft); }
+.baixar-opcao:disabled { opacity: .6; cursor: wait; }
+.baixar-opcao span { color: var(--muted); font-size: 14px; }
+#impressao { display: none; }
+.fp-topo { display: flex; gap: 14px; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 12px; }
+.fp-topo img { height: 52px; }
+.fp-topo h2 { font-size: 26px; }
+@media print {
+  body.imprimindo > :not(#impressao) { display: none !important; }
+  body.imprimindo #impressao { display: block; }
+  .ficha-print { break-after: page; }
+  .ficha-print:last-child { break-after: auto; }
+  .ficha-print .resp-grid { grid-template-columns: 45% 1fr; }
+}
+@media print {
+  /* PDF de todas as fichas: compacto, sem página em branco entre seções */
+  body.imprimindo { font-size: 11px; }
+  body.imprimindo .det-sec, body.imprimindo .box { break-inside: auto; }
+  body.imprimindo .resp-grid > div { padding: 3px 4px; break-inside: avoid; }
+  body.imprimindo .resp-grid .q { font-size: 11px; }
+  body.imprimindo .ficha-print h3 { font-size: 15px; margin: 10px 0 4px; break-after: avoid; }
+  body.imprimindo .fp-topo h2 { font-size: 20px; }
+  body.imprimindo .alert-box { padding: 6px 10px; margin-bottom: 8px; }
+  body.imprimindo .sig-img { max-width: 220px; }
+}
+.lista-filtros .row { flex-wrap: wrap; }
+.lista-filtros .row .btn { white-space: nowrap; }

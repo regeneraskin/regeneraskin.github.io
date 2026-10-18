@@ -1,9 +1,9 @@
 // Camada de dados: conversa com o Supabase ou, se ele ainda não estiver
 // configurado, com um "banco" de demonstração guardado no navegador.
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js?v=202610180440';
-import { modeloPadrao, agendaPadrao } from './modelo-padrao.js?v=202610180440';
-import { alertas, dadosDaCliente } from './render.js?v=202610180440';
-import { uid, clone } from './util.js?v=202610180440';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js?v=202610181407';
+import { modeloPadrao, agendaPadrao } from './modelo-padrao.js?v=202610181407';
+import { alertas, dadosDaCliente } from './render.js?v=202610181407';
+import { uid, clone } from './util.js?v=202610181407';
 
 const demo = !SUPABASE_URL || !SUPABASE_ANON_KEY;
 
@@ -81,6 +81,23 @@ function supabaseApi() {
       await (await sb()).auth.signOut();
     },
 
+    // Manda o e-mail com o link para criar uma senha nova
+    async recuperarSenha(email) {
+      const s = await sb();
+      ok(await s.auth.resetPasswordForEmail(email, { redirectTo: new URL('nova-senha.html', location.href).href }));
+    },
+
+    // Na página nova-senha.html: o link do e-mail abre uma sessão temporária
+    async sessaoDeRecuperacao() {
+      const s = await sb();
+      const { session } = ok(await s.auth.getSession());
+      return !!session;
+    },
+
+    async definirNovaSenha(senha) {
+      ok(await (await sb()).auth.updateUser({ password: senha }));
+    },
+
     async sessao() {
       const s = await sb();
       const { session } = ok(await s.auth.getSession());
@@ -110,6 +127,17 @@ function supabaseApi() {
 
     async ficha(id) {
       return ok(await (await sb()).from('submissions').select('*').eq('id', id).single());
+    },
+
+    // Todas as fichas com respostas (para baixar), em lotes de 200
+    async fichasCompletas() {
+      const s = await sb();
+      const todas = [];
+      for (let de = 0; ; de += 200) {
+        const lote = ok(await s.from('submissions').select('*').order('created_at', { ascending: false }).range(de, de + 199));
+        todas.push(...lote);
+        if (lote.length < 200) return todas;
+      }
     },
 
     async atualizarFicha(id, mudancas) {
@@ -218,6 +246,10 @@ function demoApi() {
 
     async sair() { sessionStorage.removeItem(AUTH); },
 
+    async recuperarSenha() { await espera(); },
+    async sessaoDeRecuperacao() { return true; },
+    async definirNovaSenha() { await espera(); },
+
     async sessao() {
       try { return JSON.parse(sessionStorage.getItem(AUTH)); } catch { return null; }
     },
@@ -252,6 +284,8 @@ function demoApi() {
     },
 
     async ficha(id) { return clone(ler().submissions.find((s) => s.id === id)); },
+
+    async fichasCompletas() { return clone(ler().submissions); },
 
     async atualizarFicha(id, mudancas) {
       altera((d) => Object.assign(d.submissions.find((s) => s.id === id), clone(mudancas)));

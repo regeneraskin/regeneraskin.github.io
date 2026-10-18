@@ -78,6 +78,17 @@ Depois:
 
 > Já rodou o `schema.sql` antes desta versão? Rode de novo: ele só cria o que falta e não apaga nada.
 
+## "Esqueci minha senha"
+
+A tela de login tem o link "Esqueci minha senha", que manda um e-mail com um link para `nova-senha.html`. Para funcionar, no Supabase:
+
+1. **Authentication → URL Configuration:** Site URL `https://regeneraskin.github.io` e, em Redirect URLs, `https://regeneraskin.github.io/nova-senha.html`.
+2. **E-mails:** sem um servidor de e-mail próprio (custom SMTP), o Supabase só entrega e-mails para pessoas que fazem parte da equipe da organização. Convide cada profissional em Organization → Team (papel "Read-only" basta).
+
+## Cópia de segurança das fichas
+
+Em **Fichas → ⬇ Baixar**: planilha (CSV para Excel) com todas as respostas, ou PDF completo com as assinaturas. Recomendado uma vez por mês.
+
 ## Publicando mudanças
 
 Antes de publicar qualquer alteração nos arquivos `js/` ou `css/`, rode:

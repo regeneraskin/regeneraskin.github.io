@@ -1,8 +1,8 @@
 // Login e barra de navegação das páginas da equipe (painel e editor).
-import { api } from './api.js?v=202610180440';
-import { el, banner, linkDaFicha, copiar, linkWhatsApp, preencher, primeiroNome, mascaraTelefone, toast } from './util.js?v=202610180440';
-import { mensagens } from './modelo-padrao.js?v=202610180440';
-import { NOME_EMPRESA } from './config.js?v=202610180440';
+import { api } from './api.js?v=202610181407';
+import { el, banner, linkDaFicha, copiar, linkWhatsApp, preencher, primeiroNome, mascaraTelefone, toast } from './util.js?v=202610181407';
+import { mensagens } from './modelo-padrao.js?v=202610181407';
+import { NOME_EMPRESA } from './config.js?v=202610181407';
 
 // Mostra o login (se preciso) e chama aoEntrar(pessoa) quando houver sessão.
 export async function exigirLogin(app, titulo, aoEntrar) {
@@ -32,11 +32,49 @@ export async function exigirLogin(app, titulo, aoEntrar) {
     },
   }, email, senha, erro, botao);
 
+  // "Esqueci minha senha": pede o e-mail e manda o link para criar outra
+  const emailRec = el('input', { class: 'input', type: 'email', placeholder: 'E-mail', autocomplete: 'username', required: true });
+  const avisoRec = el('div', { class: 'erro', role: 'alert' });
+  const botaoRec = el('button', { class: 'btn', type: 'submit' }, 'Enviar link');
+  const formRec = el('form', {
+    hidden: true,
+    onsubmit: async (e) => {
+      e.preventDefault();
+      avisoRec.textContent = '';
+      botaoRec.disabled = true;
+      try {
+        await api.recuperarSenha(emailRec.value.trim());
+        formRec.replaceChildren(
+          el('p', { class: 'login-ok' }, '✉️ Pronto! Se esse e-mail estiver cadastrado, o link para criar uma senha nova chega em instantes.'),
+          el('p', { class: 'muted' }, 'Não chegou? Confira a caixa de spam ou de promoções.'),
+          voltar());
+      } catch (err) {
+        avisoRec.textContent = /rate limit|seconds/i.test(err.message)
+          ? 'Muitos pedidos seguidos. Aguarde alguns minutos e tente de novo.'
+          : 'Não foi possível enviar agora. Tente de novo em alguns minutos.';
+        botaoRec.disabled = false;
+      }
+    },
+  },
+  el('p', { class: 'muted', style: 'margin:0' }, 'Digite o e-mail do seu acesso. Vou te mandar um link para criar uma senha nova.'),
+  emailRec, avisoRec, botaoRec, voltar());
+
+  function voltar() {
+    return el('button', { type: 'button', class: 'btn-link', onclick: () => { formRec.hidden = true; form.hidden = false; email.focus(); } }, '← Voltar para o login');
+  }
+  const esqueci = el('button', { type: 'button', class: 'btn-link', onclick: () => {
+    form.hidden = true;
+    formRec.hidden = false;
+    emailRec.value = email.value;
+    emailRec.focus();
+  } }, 'Esqueci minha senha');
+  form.append(esqueci);
+
   app.replaceChildren(banner(api) || '', el('div', { class: 'login' },
     el('img', { src: 'assets/monograma.jpg', alt: NOME_EMPRESA }),
     el('h1', {}, titulo),
     api.demo ? el('p', { class: 'muted' }, 'No modo demonstração, qualquer e-mail entra.') : null,
-    form));
+    form, formRec));
   email.focus();
 }
 

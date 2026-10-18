@@ -1,8 +1,8 @@
 // Painel da profissional: lista as fichas enviadas e permite acompanhar cada uma.
-import { api } from './api.js?v=202610180440';
-import { alertas, respostaView } from './render.js?v=202610180440';
-import { el, banner, toast, dataHora, dataCurta, hojeISO, uid, diaNoFuso, linkWhatsApp, primeiroNome, linkDaFicha, linkAgendamento } from './util.js?v=202610180440';
-import { exigirLogin, barraTopo, modal, painelEnvio, modelosMensagem } from './equipe.js?v=202610180440';
+import { api } from './api.js?v=202610181407';
+import { alertas, respostaView, respostaTexto, camposComResposta } from './render.js?v=202610181407';
+import { el, banner, toast, dataHora, dataCurta, hojeISO, uid, diaNoFuso, linkWhatsApp, primeiroNome, linkDaFicha, linkAgendamento } from './util.js?v=202610181407';
+import { exigirLogin, barraTopo, modal, painelEnvio, modelosMensagem } from './equipe.js?v=202610181407';
 
 const app = document.getElementById('app');
 const STATUS = { nova: 'Nova', vista: 'Vista', arquivada: 'Arquivada' };
@@ -31,7 +31,8 @@ exigirLogin(app, 'Painel da Profissional', async (p) => {
       el('div', { class: 'lista-filtros' },
         el('div', { class: 'row' },
           el('button', { class: 'btn small', onclick: enviarFicha }, '+ Enviar ficha para cliente'),
-          el('button', { class: 'btn ghost small', onclick: carregar, title: 'Atualizar lista' }, '↻ Atualizar')),
+          el('button', { class: 'btn ghost small', onclick: carregar, title: 'Atualizar lista' }, '↻ Atualizar'),
+          el('button', { class: 'btn ghost small', onclick: baixarFichas, title: 'Baixar todas as fichas' }, '⬇ Baixar')),
         busca,
         el('div', { class: 'row' }, selStatus, selForm)),
       lista),
@@ -256,4 +257,106 @@ async function enviarFicha() {
       el('p', { class: 'muted', style: 'margin-top:0' }, 'A cliente preenche pelo celular e a ficha aparece aqui na hora. 💕'),
       painelEnvio({ opcoes: forms.map((f) => ({ titulo: f.title, url: linkDaFicha(f.slug) })), modelo: (await modelosMensagem()).ficha }))
     : el('p', {}, 'Nenhum questionário ativo. Crie ou ative um no editor.'));
+}
+
+// ---------- Baixar todas as fichas (cópia de segurança) ----------
+
+let fecharBaixar = () => {};
+
+function baixarFichas() {
+  const opcao = (titulo, texto, acao) => el('button', { type: 'button', class: 'baixar-opcao', onclick: async (e) => {
+    const botao = e.currentTarget;
+    botao.disabled = true;
+    try { await acao(); } catch (err) { console.error(err); toast('Não foi possível baixar: ' + err.message, 'erro'); }
+    botao.disabled = false;
+  } }, el('strong', {}, titulo), el('span', {}, texto));
+
+  fecharBaixar = modal('Baixar todas as fichas', el('div', { class: 'baixar' },
+    el('p', { class: 'muted', style: 'margin-top:0' }, 'Guarde uma cópia das fichas no seu computador, de preferência uma vez por mês. 💾'),
+    opcao('📊 Planilha (Excel)', 'Uma linha por cliente, com todas as respostas. Ideal para consultar e filtrar.', baixarPlanilha),
+    opcao('📄 PDF completo', 'Todas as fichas completas, com as assinaturas. Cada ficha começa numa página nova. Na janela que abrir, escolha "Salvar como PDF".', imprimirTodas)));
+}
+
+async function baixarPlanilha() {
+  const todas = await api.fichasCompletas();
+  if (!todas.length) return toast('Ainda não há fichas para baixar.');
+
+  // Uma coluna por pergunta; perguntas iguais em questionários diferentes ficam na mesma coluna
+  const perguntas = [];
+  for (const s of [...todas].reverse()) {
+    for (const f of camposComResposta(s.form_schema)) {
+      const rotulo = f.label.trim();
+      if (!perguntas.includes(rotulo)) perguntas.push(rotulo);
+    }
+  }
+  const cabecalho = ['Enviada em', 'Questionário', 'Situação', 'Nome', 'Telefone', ...perguntas, 'Pontos de atenção', 'Sessões', 'Observações'];
+  const linhas = todas.map((s) => {
+    const porRotulo = new Map(camposComResposta(s.form_schema).map((f) => [f.label.trim(), f]));
+    return [
+      dataHora(s.created_at), s.form_title, STATUS[s.status] || s.status, s.client_name, s.client_phone || '',
+      ...perguntas.map((r) => (porRotulo.has(r) ? respostaTexto(porRotulo.get(r), s.answers?.[porRotulo.get(r).id]) : '')),
+      alertas(s.form_schema, s.answers).map((a) => a.label + (a.detalhe ? ' (' + a.detalhe + ')' : '')).join('; '),
+      (s.sessions || []).map((x) => [dataCurta(x.data), x.numero && 'sessão ' + x.numero, x.area, x.produto, x.obs].filter(Boolean).join(' · ')).join('\n'),
+      s.notes || '',
+    ];
+  });
+  // Ponto e vírgula + BOM: abre certinho no Excel em português, com acentos
+  const celula = (v) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+  const csv = '\uFEFF' + [cabecalho, ...linhas].map((l) => l.map(celula).join(';')).join('\r\n');
+  salvarArquivo(`fichas-regenera-${hojeISO()}.csv`, csv, 'text/csv;charset=utf-8');
+  fecharBaixar();
+  toast(`Planilha com ${todas.length} ${todas.length === 1 ? 'ficha' : 'fichas'} baixada!`);
+}
+
+function salvarArquivo(nome, conteudo, tipo) {
+  const url = URL.createObjectURL(new Blob([conteudo], { type: tipo }));
+  const a = el('a', { href: url, download: nome });
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+
+async function imprimirTodas() {
+  const todas = await api.fichasCompletas();
+  if (!todas.length) return toast('Ainda não há fichas para baixar.');
+  fecharBaixar();
+  document.getElementById('impressao')?.remove();
+  const area = el('div', { id: 'impressao' }, todas.map(fichaImpressa));
+  document.body.append(area);
+  document.body.classList.add('imprimindo');
+  const limpar = () => {
+    area.remove();
+    document.body.classList.remove('imprimindo');
+    removeEventListener('afterprint', limpar);
+  };
+  addEventListener('afterprint', limpar);
+  // espera as assinaturas carregarem antes de abrir a impressão
+  await Promise.all([...area.querySelectorAll('img')].map((i) => (i.complete ? 0 : new Promise((r) => { i.onload = r; i.onerror = r; }))));
+  print();
+}
+
+function fichaImpressa(s) {
+  const schema = s.form_schema || {};
+  const avisos = alertas(schema, s.answers);
+  const sessoes = s.sessions || [];
+  return el('article', { class: 'ficha-print' },
+    el('header', { class: 'fp-topo' },
+      el('img', { src: 'assets/monograma.jpg', alt: '' }),
+      el('div', {},
+        el('h2', {}, s.client_name),
+        el('div', { class: 'muted' }, [s.form_title, 'enviada em ' + dataHora(s.created_at), s.client_phone].filter(Boolean).join(' · ')))),
+    avisos.length ? el('div', { class: 'alert-box' }, el('h3', {}, '⚠ Pontos de atenção'),
+      el('ul', {}, avisos.map((a) => el('li', {}, a.label, a.detalhe ? ' — ' + a.detalhe : '')))) : null,
+    (schema.sections || []).map((sec) => {
+      const campos = (sec.fields || []).filter((f) => f.type !== 'info');
+      if (!campos.length) return null;
+      return el('div', { class: 'det-sec' }, el('h3', {}, sec.title),
+        el('div', { class: 'resp-grid' }, campos.flatMap((f) => [el('div', { class: 'q' }, f.label), el('div', {}, respostaView(f, s.answers?.[f.id]))])));
+    }),
+    sessoes.length ? el('div', { class: 'det-sec' }, el('h3', {}, 'Sessões realizadas'),
+      el('table', { class: 'tabela' },
+        el('thead', {}, el('tr', {}, ['Data', 'Nº', 'Área', 'Regenerador', 'Observações'].map((t) => el('th', {}, t)))),
+        el('tbody', {}, sessoes.map((r) => el('tr', {}, el('td', {}, dataCurta(r.data)), el('td', {}, r.numero), el('td', {}, r.area), el('td', {}, r.produto), el('td', {}, r.obs)))))) : null,
+    s.notes ? el('div', { class: 'det-sec' }, el('h3', {}, 'Observações da profissional'), el('p', { class: 'pre' }, s.notes)) : null);
 }
