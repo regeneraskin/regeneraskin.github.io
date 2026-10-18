@@ -3,8 +3,9 @@
 // quando já chega com nome e telefone preenchidos.
 import { api } from './api.js';
 import { NOME_EMPRESA } from './config.js';
+import { mensagens } from './modelo-padrao.js';
 import {
-  el, banner, toast, diaNoFuso, diaDaSemana, somaDias, nomeDoDia, diaPorExtenso, horariosLivres, linkWhatsApp,
+  el, banner, toast, preencher, diaNoFuso, diaDaSemana, somaDias, nomeDoDia, diaPorExtenso, horariosLivres, linkWhatsApp,
 } from './util.js';
 
 const app = document.getElementById('app');
@@ -155,7 +156,7 @@ function confirmacao() {
 
 function sucesso(servico, dia, horario, nome) {
   const quando = `${diaPorExtenso(dia)} às ${horario.hora}`;
-  const msg = `Olá! Sou ${nome} e acabei de agendar ${servico.nome} para ${quando}.`;
+  const msg = preencher(mensagens(config).aviso_cliente, { nome, servico: servico.nome, data: diaPorExtenso(dia), hora: horario.hora });
   corpo.replaceChildren(el('div', { class: 'thanks' },
     el('h2', {}, 'Horário reservado! 💕'),
     el('p', { class: 'resumo-final' }, el('strong', {}, servico.nome), el('br'), quando),

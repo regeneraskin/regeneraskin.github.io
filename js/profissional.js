@@ -1,7 +1,7 @@
 // Painel da profissional: lista as fichas enviadas e permite acompanhar cada uma.
 import { api } from './api.js';
 import { alertas, respostaView } from './render.js';
-import { el, banner, toast, dataHora, dataCurta, hojeISO, uid, diaNoFuso } from './util.js';
+import { el, banner, toast, dataHora, dataCurta, hojeISO, uid, diaNoFuso, linkWhatsApp, primeiroNome } from './util.js';
 import { exigirLogin, barraTopo, modal, compartilhar } from './equipe.js';
 
 const app = document.getElementById('app');
@@ -137,7 +137,7 @@ function desenharDetalhe() {
       el('div', {},
         el('h2', {}, s.client_name),
         el('div', { class: 'muted' }, s.form_title, ' · enviada em ', dataHora(s.created_at), ' · ', el('span', { class: 'badge ' + s.status }, STATUS[s.status])),
-        fone ? el('a', { class: 'btn-link nao-imprimir', href: 'https://wa.me/55' + fone.replace(/^55(?=\d{10,11}$)/, ''), target: '_blank', rel: 'noopener' }, 'Conversar no WhatsApp: ' + s.client_phone) : null),
+        fone ? el('a', { class: 'btn-link nao-imprimir', href: linkWhatsApp(fone, `Oi, ${primeiroNome(s.client_name)}! Tudo bem? 🌸\n\n`), target: '_blank', rel: 'noopener' }, 'Conversar no WhatsApp: ' + s.client_phone) : null),
       acoes),
     avisos.length ? el('div', { class: 'alert-box' },
       el('h3', {}, '⚠ Pontos de atenção'),
@@ -250,6 +250,6 @@ async function enviarFicha() {
   modal('Enviar ficha para cliente', forms.length
     ? el('div', {},
       el('p', { class: 'muted' }, 'Copie o link ou mande direto pelo WhatsApp. A cliente preenche pelo celular e a ficha aparece aqui.'),
-      forms.map((f) => el('div', {}, el('strong', {}, f.title), compartilhar(f))))
+      await Promise.all(forms.map(async (f) => el('div', {}, el('strong', {}, f.title), await compartilhar(f)))))
     : el('p', {}, 'Nenhum questionário ativo. Crie ou ative um no editor.'));
 }

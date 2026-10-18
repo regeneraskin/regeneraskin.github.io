@@ -78,6 +78,38 @@ export function modeloPadrao() {
   };
 }
 
+// Mensagens de WhatsApp. Palavras entre chaves são trocadas pelo app:
+// {nome}, {servico}, {data}, {hora}, {link}.
+export const MENSAGENS_PADRAO = {
+  ficha:
+    'Oi, tudo bem? 🌸\n\n' +
+    'Que alegria ter você com a gente na Regenera Skin! ✨\n\n' +
+    'Antes do seu atendimento, preparei uma fichinha rápida pra conhecer melhor a sua pele e a sua saúde. ' +
+    'Assim eu cuido de você com todo o carinho e a segurança que você merece. 💕\n\n' +
+    'É só tocar no link e preencher com calma (leva uns 5 minutinhos):\n{link}\n\n' +
+    'Qualquer dúvida, estou aqui! 🥰',
+  agendamento:
+    'Oi, tudo bem? 🌸\n\n' +
+    'Que bom que você quer cuidar de você com a gente! ✨\n\n' +
+    'Por aqui você escolhe o dia e o horário que ficam melhores pra você:\n{link}\n\n' +
+    'Assim que agendar, seu horário fica reservadinho. Te espero! 💕',
+  confirmacao:
+    'Oi, {nome}! Tudo bem? 🌸\n\n' +
+    'Passando pra confirmar o seu momento de cuidado com a gente:\n\n' +
+    '✨ {servico}\n📅 {data}\n⏰ {hora}\n\n' +
+    'Posso confirmar sua presença? Se precisar remarcar, é só me avisar por aqui, tá? 💕\n\n' +
+    'Com carinho, Regenera Skin',
+  aviso_cliente:
+    'Oi! Aqui é {nome} 🌸\n\n' +
+    'Acabei de agendar pelo link:\n\n' +
+    '✨ {servico}\n📅 {data}\n⏰ {hora}\n\n' +
+    'Até lá! 💕',
+};
+
+export function mensagens(config) {
+  return { ...MENSAGENS_PADRAO, ...(config?.mensagens || {}) };
+}
+
 // Expediente e serviços iniciais da agenda (iguais ao supabase/schema.sql).
 // Dias da semana: 0 = domingo … 6 = sábado.
 export function agendaPadrao() {
@@ -95,5 +127,6 @@ export function agendaPadrao() {
       { nome: 'Regeneração dérmica (estrias)', duracao: 90 },
       { nome: 'Microderme', duracao: 60 },
     ],
+    mensagens: { ...MENSAGENS_PADRAO },
   };
 }

@@ -1,9 +1,9 @@
 // Agenda da equipe: atendimentos do dia, semana, bloqueios e configuração do expediente.
 import { api } from './api.js';
-import { agendaPadrao } from './modelo-padrao.js';
+import { agendaPadrao, mensagens, MENSAGENS_PADRAO } from './modelo-padrao.js';
 import {
   el, banner, toast, clone, instante, diaNoFuso, horaNoFuso, somaDias, diaDaSemana, nomeDoDia, diaPorExtenso,
-  horariosLivres, linkWhatsApp, linkAgendamento, minutos, hhmm,
+  horariosLivres, linkWhatsApp, linkAgendamento, minutos, hhmm, preencher, primeiroNome,
 } from './util.js';
 import { exigirLogin, barraTopo, modal, compartilharLink } from './equipe.js';
 
@@ -73,7 +73,7 @@ function desenhar() {
       el('button', { class: 'btn ghost small', onclick: bloquear }, 'Bloquear horário'),
       el('button', { class: 'btn ghost small', onclick: () => modal('Link de agendamento', el('div', {},
         el('p', { class: 'muted' }, 'Envie para suas clientes. Elas escolhem o atendimento, o dia e o horário livre, e o agendamento aparece aqui na hora.'),
-        compartilharLink(linkAgendamento(), 'Oi! Você pode agendar seu horário por aqui: ' + linkAgendamento()))) }, 'Link de agendamento'),
+        compartilharLink(linkAgendamento(), preencher(mensagens(config).agendamento, { link: linkAgendamento() })))) }, 'Link de agendamento'),
       pessoa.papel === 'admin' ? el('button', { class: 'btn ghost small', onclick: configurar }, 'Horários e serviços') : null,
       el('button', { class: 'btn ghost small', title: 'Atualizar', onclick: () => irPara(dia, true) }, '↻')));
 
@@ -111,7 +111,8 @@ function cartao(a) {
       el('div', { class: 'ag-ops' }, el('button', { class: 'btn danger small', onclick: () => remover(a, 'Desbloquear este horário?') }, 'Desbloquear')));
   }
   const fone = a.cliente_telefone || '';
-  const msg = `Olá, ${a.cliente_nome.split(' ')[0]}! Passando para confirmar seu horário de ${a.servico} ${dia === hoje() ? 'hoje' : 'em ' + diaPorExtenso(dia)} às ${ini}. Podemos confirmar? 💕`;
+  const quando = dia === hoje() ? 'hoje, ' + diaPorExtenso(dia) : dia === somaDias(hoje(), 1) ? 'amanhã, ' + diaPorExtenso(dia) : diaPorExtenso(dia);
+  const msg = preencher(mensagens(config).confirmacao, { nome: primeiroNome(a.cliente_nome), servico: a.servico, data: quando, hora: ini });
   const status = el('select', { class: 'input status-sel st-' + a.status, 'aria-label': 'Situação', onchange: async (e) => {
     try {
       await api.atualizarAgendamento(a.id, { status: e.target.value });
@@ -252,6 +253,12 @@ function configurar() {
   const intervalo = el('select', { class: 'input' }, [15, 20, 30, 45, 60].map((n) => el('option', { value: String(n), selected: Number(c.intervalo) === n }, `A cada ${n} min`)));
   const antecedencia = el('input', { class: 'input', type: 'number', min: '0', value: String(c.antecedencia_horas ?? 2) });
   const diasFrente = el('input', { class: 'input', type: 'number', min: '1', max: '60', value: String(c.dias_a_frente ?? 30) });
+  const msgs = mensagens(c);
+  const textosMsg = Object.fromEntries(Object.keys(MENSAGENS_PADRAO).map((k) => [k, el('textarea', { class: 'input', rows: '7', value: msgs[k] })]));
+  const restaurar = el('button', { type: 'button', class: 'btn-link', onclick: () => {
+    if (!confirm('Voltar todas as mensagens para o texto sugerido?')) return;
+    for (const [k, t] of Object.entries(textosMsg)) t.value = MENSAGENS_PADRAO[k];
+  } }, 'Restaurar mensagens sugeridas');
 
   let fechar;
   const form = el('form', { class: 'form-grid', onsubmit: async (e) => {
@@ -281,6 +288,7 @@ function configurar() {
       ...c, horarios, servicos: lista, whatsapp: whats.value.trim(), mensagem: mensagem.value.trim(),
       intervalo: Number(intervalo.value), antecedencia_horas: Math.max(0, Number(antecedencia.value) || 0),
       dias_a_frente: Math.min(60, Math.max(1, Number(diasFrente.value) || 30)),
+      mensagens: Object.fromEntries(Object.entries(textosMsg).map(([k, t]) => [k, t.value.trim() || MENSAGENS_PADRAO[k]])),
     };
     try {
       await api.salvarConfigAgenda(novo);
@@ -303,6 +311,14 @@ function configurar() {
   campo('Agenda aberta para os próximos (dias)', diasFrente),
   campo('Seu WhatsApp (a cliente pode te avisar depois de agendar)', whats),
   campo('Mensagem na página de agendamento', mensagem, 'full'),
+  el('h3', { class: 'full' }, 'Mensagens de WhatsApp'),
+  el('p', { class: 'full muted', style: 'margin:0' },
+    'Escreva do seu jeitinho, com emojis à vontade. O app troca sozinho: {nome} (primeiro nome da cliente), {servico}, {data}, {hora} e {link}.'),
+  campo('Confirmação de horário (você → cliente)', textosMsg.confirmacao, 'full'),
+  campo('Envio da ficha de anamnese (você → cliente)', textosMsg.ficha, 'full'),
+  campo('Envio do link de agendamento (você → cliente)', textosMsg.agendamento, 'full'),
+  campo('Aviso depois de agendar (cliente → você)', textosMsg.aviso_cliente, 'full'),
+  el('div', { class: 'full' }, restaurar),
   el('div', { class: 'full form-acoes' }, el('button', { class: 'btn', type: 'submit' }, 'Salvar configuração')));
   fechar = modal('Horários e serviços', form);
 }

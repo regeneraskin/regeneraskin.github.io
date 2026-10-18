@@ -1,6 +1,7 @@
 // Login e barra de navegação das páginas da equipe (painel e editor).
 import { api } from './api.js';
-import { el, banner, linkDaFicha, copiar } from './util.js';
+import { el, banner, linkDaFicha, copiar, linkWhatsApp, preencher } from './util.js';
+import { mensagens } from './modelo-padrao.js';
 import { NOME_EMPRESA } from './config.js';
 
 // Mostra o login (se preciso) e chama aoEntrar(pessoa) quando houver sessão.
@@ -63,10 +64,19 @@ export function modal(titulo, conteudo) {
   return fechar;
 }
 
+// Modelos de mensagem (configurados na Agenda → Horários e serviços)
+let modelos;
+export async function modelosMensagem() {
+  if (!modelos) {
+    try { modelos = mensagens(await api.configAgenda()); } catch { modelos = mensagens(); }
+  }
+  return modelos;
+}
+
 // Caixa com o link da ficha + botão de WhatsApp
-export function compartilhar(form) {
+export async function compartilhar(form) {
   const url = linkDaFicha(form.slug);
-  return compartilharLink(url, `Oi! Antes do seu procedimento, preencha sua ficha por aqui, por favor: ${url}`);
+  return compartilharLink(url, preencher((await modelosMensagem()).ficha, { link: url }));
 }
 
 export function compartilharLink(url, msg) {
@@ -74,6 +84,6 @@ export function compartilharLink(url, msg) {
     el('div', { class: 'share-row' },
       el('input', { class: 'input', value: url, readonly: '', onfocus: (e) => e.target.select(), 'aria-label': 'Link da ficha' }),
       el('button', { class: 'btn small', type: 'button', onclick: () => copiar(url) }, 'Copiar link'),
-      el('a', { class: 'btn ghost small', href: 'https://wa.me/?text=' + encodeURIComponent(msg), target: '_blank', rel: 'noopener' }, 'Enviar no WhatsApp'),
+      el('a', { class: 'btn ghost small', href: linkWhatsApp('', msg), target: '_blank', rel: 'noopener' }, 'Enviar no WhatsApp'),
       el('a', { class: 'btn ghost small', href: url, target: '_blank', rel: 'noopener' }, 'Abrir')));
 }
