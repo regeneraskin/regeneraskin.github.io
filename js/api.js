@@ -1,9 +1,9 @@
 // Camada de dados: conversa com o Supabase ou, se ele ainda não estiver
 // configurado, com um "banco" de demonstração guardado no navegador.
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js?v=202610180434';
-import { modeloPadrao, agendaPadrao } from './modelo-padrao.js?v=202610180434';
-import { alertas, dadosDaCliente } from './render.js?v=202610180434';
-import { uid, clone } from './util.js?v=202610180434';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js?v=202610180440';
+import { modeloPadrao, agendaPadrao } from './modelo-padrao.js?v=202610180440';
+import { alertas, dadosDaCliente } from './render.js?v=202610180440';
+import { uid, clone } from './util.js?v=202610180440';
 
 const demo = !SUPABASE_URL || !SUPABASE_ANON_KEY;
 

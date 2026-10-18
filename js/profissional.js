@@ -1,8 +1,8 @@
 // Painel da profissional: lista as fichas enviadas e permite acompanhar cada uma.
-import { api } from './api.js?v=202610180434';
-import { alertas, respostaView } from './render.js?v=202610180434';
-import { el, banner, toast, dataHora, dataCurta, hojeISO, uid, diaNoFuso, linkWhatsApp, primeiroNome, linkDaFicha, linkAgendamento } from './util.js?v=202610180434';
-import { exigirLogin, barraTopo, modal, painelEnvio, modelosMensagem } from './equipe.js?v=202610180434';
+import { api } from './api.js?v=202610180440';
+import { alertas, respostaView } from './render.js?v=202610180440';
+import { el, banner, toast, dataHora, dataCurta, hojeISO, uid, diaNoFuso, linkWhatsApp, primeiroNome, linkDaFicha, linkAgendamento } from './util.js?v=202610180440';
+import { exigirLogin, barraTopo, modal, painelEnvio, modelosMensagem } from './equipe.js?v=202610180440';
 
 const app = document.getElementById('app');
 const STATUS = { nova: 'Nova', vista: 'Vista', arquivada: 'Arquivada' };
@@ -137,7 +137,7 @@ function desenharDetalhe() {
       el('div', {},
         el('h2', {}, s.client_name),
         el('div', { class: 'muted' }, s.form_title, ' · enviada em ', dataHora(s.created_at), ' · ', el('span', { class: 'badge ' + s.status }, STATUS[s.status])),
-        fone ? el('a', { class: 'btn-link nao-imprimir', href: linkWhatsApp(fone, `Oi, ${primeiroNome(s.client_name)}! Tudo bem? 🌸\n\n`), target: '_blank', rel: 'noopener' }, 'Conversar no WhatsApp: ' + s.client_phone) : null),
+        fone ? el('a', { class: 'btn-link nao-imprimir', href: linkWhatsApp(fone, `Olá, ${primeiroNome(s.client_name)}! Tudo bem? 🌸\n\n`), target: '_blank', rel: 'noopener' }, 'Conversar no WhatsApp: ' + s.client_phone) : null),
       acoes),
     avisos.length ? el('div', { class: 'alert-box' },
       el('h3', {}, '⚠ Pontos de atenção'),

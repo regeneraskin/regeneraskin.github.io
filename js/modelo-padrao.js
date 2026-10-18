@@ -90,7 +90,7 @@ export const MENSAGENS_PADRAO = {
     'Se tiver qualquer dúvida, estou à disposição.',
   agendamento:
     'Olá, {nome}! Tudo bem? 🌸\n\n' +
-    'Fico muito feliz em saber que você quer viver esse momento de cuidado com a gente! ✨\n\n' +
+    'Fico muito feliz em saber que você quer viver esse momento de cuidado comigo! ✨\n\n' +
     'Pelo link abaixo, você escolhe o dia e o horário que combinam melhor com a sua rotina:\n{link}\n\n' +
     'Assim que concluir, o seu horário fica reservado. Será um prazer atender você! 💕',
   confirmacao:

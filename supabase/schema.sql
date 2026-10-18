@@ -246,7 +246,7 @@ begin
   if (select count(*) from public.agendamentos
       where regexp_replace(coalesce(cliente_telefone, ''), '\D', '', 'g') = fone
         and inicio > now() and status <> 'cancelado') >= 2 then
-    raise exception 'Você já tem horários marcados. Fale com a gente pelo WhatsApp para remarcar.';
+    raise exception 'Você já tem horários marcados. Fale comigo pelo WhatsApp para remarcar.';
   end if;
 
   insert into public.agendamentos (inicio, fim, servico, cliente_nome, cliente_telefone, ficha_id, origem)

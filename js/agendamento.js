@@ -1,12 +1,12 @@
 // Página pública de agendamento: agendamento.html
 // Pode ser aberta direto (link só de agendamento) ou ao final da ficha,
 // quando já chega com nome e telefone preenchidos.
-import { api } from './api.js?v=202610180434';
-import { NOME_EMPRESA } from './config.js?v=202610180434';
-import { mensagens } from './modelo-padrao.js?v=202610180434';
+import { api } from './api.js?v=202610180440';
+import { NOME_EMPRESA } from './config.js?v=202610180440';
+import { mensagens } from './modelo-padrao.js?v=202610180440';
 import {
   el, banner, toast, preencher, diaNoFuso, diaDaSemana, somaDias, nomeDoDia, diaPorExtenso, horariosLivres, linkWhatsApp,
-} from './util.js?v=202610180434';
+} from './util.js?v=202610180440';
 
 const app = document.getElementById('app');
 
@@ -84,7 +84,7 @@ function desenhar() {
         el('span', { class: 'dia-sem' }, nomeDoDia(d.dia, true)),
         el('span', { class: 'dia-num' }, d.dia.slice(8, 10) + '/' + d.dia.slice(5, 7)),
         el('span', { class: 'dia-livres' }, d.livres ? `${d.livres} ${d.livres === 1 ? 'horário' : 'horários'}` : 'sem horários'))))
-        : el('p', { class: 'muted' }, 'Não há horários livres nos próximos dias. Fale com a gente pelo WhatsApp! 💕')));
+        : el('p', { class: 'muted' }, 'Não há horários livres nos próximos dias. Fale comigo pelo WhatsApp! 💕')));
   }
 
   if (escolha.servico && escolha.dia) {
@@ -160,7 +160,7 @@ function sucesso(servico, dia, horario, nome) {
   corpo.replaceChildren(el('div', { class: 'thanks' },
     el('h2', {}, 'Horário reservado! 💕'),
     el('p', { class: 'resumo-final' }, el('strong', {}, servico.nome), el('br'), quando),
-    el('p', { class: 'muted' }, 'Se precisar remarcar ou cancelar, é só chamar a gente no WhatsApp.'),
+    el('p', { class: 'muted' }, 'Se precisar remarcar ou cancelar, é só me chamar no WhatsApp.'),
     config.whatsapp ? el('a', { class: 'btn', href: linkWhatsApp(config.whatsapp, msg), target: '_blank', rel: 'noopener' }, 'Avisar no WhatsApp') : null));
   scrollTo(0, 0);
 }

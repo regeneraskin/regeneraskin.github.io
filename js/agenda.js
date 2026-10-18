@@ -1,11 +1,11 @@
 // Agenda da equipe: atendimentos do dia, semana, bloqueios e configuração do expediente.
-import { api } from './api.js?v=202610180434';
-import { agendaPadrao, mensagens, MENSAGENS_PADRAO } from './modelo-padrao.js?v=202610180434';
+import { api } from './api.js?v=202610180440';
+import { agendaPadrao, mensagens, MENSAGENS_PADRAO } from './modelo-padrao.js?v=202610180440';
 import {
   el, banner, toast, clone, instante, diaNoFuso, horaNoFuso, somaDias, diaDaSemana, nomeDoDia, diaPorExtenso,
   horariosLivres, linkWhatsApp, linkAgendamento, minutos, hhmm, preencher, primeiroNome,
-} from './util.js?v=202610180434';
-import { exigirLogin, barraTopo, modal, painelEnvio } from './equipe.js?v=202610180434';
+} from './util.js?v=202610180440';
+import { exigirLogin, barraTopo, modal, painelEnvio } from './equipe.js?v=202610180440';
 
 const app = document.getElementById('app');
 const STATUS = { agendado: 'Agendado', confirmado: 'Confirmado', concluido: 'Concluído', faltou: 'Faltou', cancelado: 'Cancelado' };
