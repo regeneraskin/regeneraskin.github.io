@@ -69,7 +69,7 @@ export function modeloPadrao() {
             'Autorizo o uso dos meus dados pessoais e de saúde informados nesta ficha exclusivamente para a avaliação ' +
             'e o acompanhamento do meu tratamento, conforme a Lei Geral de Proteção de Dados (LGPD).' },
           { id: 'imagem', type: 'choice', required: true, label: 'Uso de fotos do procedimento (antes e depois) para divulgação:',
-            options: ['Autorizo', 'Autorizo, desde que eu não seja identificada', 'Não autorizo'] },
+            options: ['Autorizo', 'Autorizo, sem mostrar meu rosto ou o que me identifique', 'Não autorizo'] },
           { id: 'assinatura', type: 'signature', label: 'Assinatura', required: true,
             help: 'Assine com o dedo (no celular) ou com o mouse.' },
         ],
@@ -83,14 +83,14 @@ export function modeloPadrao() {
 export const MENSAGENS_PADRAO = {
   ficha:
     'Olá, {nome}! Tudo bem? 🌸\n\n' +
-    'Seja muito bem-vinda à Regenera Skin! ✨\n\n' +
+    'É um prazer ter você na Regenera Skin! ✨\n\n' +
     'Antes do seu atendimento, peço que preencha a ficha de anamnese. Com essas informações, ' +
     'conheço melhor a sua pele e a sua saúde e conduzo o seu tratamento com toda a segurança que você merece. 💕\n\n' +
     'O preenchimento leva cerca de 5 minutos:\n{link}\n\n' +
     'Se tiver qualquer dúvida, estou à disposição.',
   agendamento:
     'Olá, {nome}! Tudo bem? 🌸\n\n' +
-    'Preparei tudo com carinho para receber você. ✨\n\n' +
+    'Fico muito feliz em saber que você quer viver esse momento de cuidado com a gente! ✨\n\n' +
     'Pelo link abaixo, você escolhe o dia e o horário mais convenientes:\n{link}\n\n' +
     'Assim que concluir, o seu horário fica reservado. Será um prazer atender você! 💕',
   confirmacao:
