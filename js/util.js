@@ -149,10 +149,23 @@ export function diaPorExtenso(dia) {
   return `${nomeDoDia(dia)}, ${d} de ${MESES[m - 1]}`;
 }
 
+// Usa o endereço completo do WhatsApp: o link curto (wa.me) estraga emojis.
 export function linkWhatsApp(numero, msg) {
   let d = String(numero || '').replace(/\D/g, '');
   if (d && !/^55\d{10,11}$/.test(d)) d = '55' + d;
-  return 'https://wa.me/' + d + (msg ? '?text=' + encodeURIComponent(msg) : '');
+  const params = new URLSearchParams();
+  if (d) params.set('phone', d);
+  if (msg) params.set('text', msg);
+  return 'https://api.whatsapp.com/send?' + params.toString().replace(/\+/g, '%20');
+}
+
+// Troca {nome}, {link}… do modelo pelos valores
+export function preencher(modelo, dados) {
+  return String(modelo || '').replace(/\{(\w+)\}/g, (tudo, chave) => (chave in dados ? dados[chave] : tudo)).trim();
+}
+
+export function primeiroNome(nome) {
+  return String(nome || '').trim().split(/\s+/)[0] || '';
 }
 
 export function linkAgendamento() {

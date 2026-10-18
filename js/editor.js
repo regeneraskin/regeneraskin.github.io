@@ -111,7 +111,7 @@ function desenhar() {
   principal.replaceChildren(...[
     el('div', { class: 'ed-toolbar' }, status,
       el('button', { class: 'btn ghost small', onclick: previa }, 'Pré-visualizar'),
-      atual.id ? el('button', { class: 'btn ghost small', onclick: () => modal('Link da ficha', compartilhar(atual)) }, 'Link para clientes') : null,
+      atual.id ? el('button', { class: 'btn ghost small', onclick: async () => modal('Link da ficha', await compartilhar(atual)) }, 'Link para clientes') : null,
       el('button', { class: 'btn small', onclick: salvar }, 'Salvar')),
     el('div', { class: 'card' },
       el('div', { class: 'card-row' },
@@ -255,7 +255,7 @@ async function salvar() {
     desenharLista();
     desenhar();
     toast('Questionário salvo! As próximas fichas já usam esta versão.');
-    if (eraNovo) modal('Pronto! Link da nova ficha', compartilhar(atual));
+    if (eraNovo) modal('Pronto! Link da nova ficha', await compartilhar(atual));
   } catch (e) {
     toast(e.message, 'erro');
   }
