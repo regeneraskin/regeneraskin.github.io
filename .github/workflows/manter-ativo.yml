@@ -1,11 +1,12 @@
 # Mantém o banco de dados (Supabase, plano gratuito) acordado.
-# O Supabase pausa projetos gratuitos depois de uma semana sem uso; este
-# "despertador" faz uma consulta simples a cada 3 dias para isso não acontecer.
+# O Supabase pausa projetos gratuitos com pouca atividade em 7 dias; segundo a
+# documentação, "algumas consultas ao banco por dia" costumam bastar. Por isso o
+# despertador consulta 4 vezes ao dia (a cada 3 dias não foi suficiente).
 name: Manter o banco ativo
 
 on:
   schedule:
-    - cron: '17 12 */3 * *'   # a cada 3 dias, por volta das 9h (Brasília)
+    - cron: '17 */6 * * *'    # 4 vezes ao dia (a cada 6 horas)
   workflow_dispatch:           # permite rodar na mão, pela aba Actions
 
 jobs:
@@ -17,5 +18,8 @@ jobs:
           # Endereço e chave pública do projeto (os mesmos de js/config.js)
           URL='https://pmwpllpcbcveqvdkeytw.supabase.co'
           CHAVE='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtd3BsbHBjYmN2ZXF2ZGtleXR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIyODU1MTIsImV4cCI6MjEwNzg2MTUxMn0.bMqlCxYP5BJcSKt7ssb19z2AzE8Us-VIOA0YxzrAU9M'
-          curl -fsS --retry 3 --retry-delay 20 "$URL/rest/v1/agenda_config?select=id" \
-            -H "apikey: $CHAVE" -H "Authorization: Bearer $CHAVE"
+          for tabela in agenda_config forms; do
+            curl -fsS --retry 3 --retry-delay 20 "$URL/rest/v1/$tabela?select=id&limit=1" \
+              -H "apikey: $CHAVE" -H "Authorization: Bearer $CHAVE"
+            echo
+          done
